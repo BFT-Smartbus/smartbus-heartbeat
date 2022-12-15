@@ -32,8 +32,12 @@ with app.app_context():
 @app.route('/heartbeatdriverpost', methods=['POST'])
 def heartbeatpost():
       data = json.loads(request.get_data())
-      
-      heartbeat_record = HeartbeatDriver(
+
+      if not data['userId'] or not data['userRole'] or not data['timeStamp'] or not data['latitude'] or not data['longitude'] or not data['speed']:
+        return "unable to write to server", 400
+        
+      else:
+        heartbeat_record = HeartbeatDriver(
             user_id=data['userId'],
             user_role=data['userRole'],
             time_stamp=data['timeStamp'],
@@ -41,12 +45,11 @@ def heartbeatpost():
             longitude=data['longitude'],
             speed=data['speed'])
 
-      db.session.add(heartbeat_record)
-      db.session.commit()
+        db.session.add(heartbeat_record)
+        db.session.commit()
 
-      return "heartbeat data added successfully", 200
-
-
+        return "heartbeat data added successfully", 200
+      
 
 if __name__ == "__main__":
 
