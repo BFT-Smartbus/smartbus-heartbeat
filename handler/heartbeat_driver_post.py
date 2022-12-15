@@ -10,9 +10,9 @@ def heartbeatpost():
       data = json.loads(request.get_data())
       
       heartbeat_record = HeartbeatDriver(
-            user_id=data['user_id'],
-            user_role=data['user_role'],
-            time_stamp=data['time_stamp'],
+            user_id=data['userId'],
+            user_role=data['userRole'],
+            time_stamp=data['timeStamp'],
             latitude=data['latitude'],
             longitude=data['longitude'],
             speed=data['speed'])
