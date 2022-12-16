@@ -1,7 +1,65 @@
-from flask import Flask
+import json
+from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+
+# os, dotenv, and load_dotenv() are what we need to use .env to hide confidential code
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
+SECRET_KEY = os.getenv("SQL_PASSWORD")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://postgres:{SECRET_KEY}@localhost/heartbeatdriver"
+db = SQLAlchemy(app)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+# define tables schemas that needed for coming up the write to heartbeat driver endpoint
+
+
+class Drivers(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    heartbeat = db.relationship(
+        'HeartbeatDriver', backref='drivers', lazy=True)
+
+
+class HeartbeatDriver(db.Model):
+    heartbeat_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
+    user_role = db.Column(db.String(100))
+    time_stamp = db.Column(db.Integer)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    speed = db.Column(db.Float)
+
+
+with app.app_context():
+    db.create_all()
+
+# endpoint, the business logic to accept data from FE and write to HeartbeatDriver table
+
+
+@app.route('/heartbeatdriverpost', methods=['POST'])
+def heartbeatpost():
+    data = json.loads(request.get_data())
+
+    if not data['userId'] or not data['userRole'] or not data['timeStamp'] or not data['latitude'] or not data['longitude'] or not data['speed']:
+        return "unable to write to server", 400
+
+    heartbeat_record = HeartbeatDriver(
+        user_id=data['userId'],
+        user_role=data['userRole'],
+        time_stamp=data['timeStamp'],
+        latitude=data['latitude'],
+        longitude=data['longitude'],
+        speed=data['speed'])
+
+    db.session.add(heartbeat_record)
+    db.session.commit()
+
+    return "heartbeat data added successfully", 200
+
+
+if __name__ == "__main__":
+
+    app.run(debug=True)
