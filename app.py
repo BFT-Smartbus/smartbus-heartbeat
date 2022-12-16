@@ -1,13 +1,13 @@
 import json
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+import os
 
-db = SQLAlchemy()
 app = Flask(__name__)
+SECRET_KEY = os.getenv("SQL_PASSWORD")
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://postgres:{SECRET_KEY}@localhost/heartbeatdriver"
+db = SQLAlchemy(app)
 
-SECRET_KEY = 'SOMEPASSWORD'
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///heartbeat.sqlite'
-db.init_app(app)
 
 class Drivers(db.Model):
   id = db.Column(db.Integer, primary_key=True)
