@@ -1,6 +1,7 @@
 import json
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS, cross_origin
 
 # os, dotenv, and load_dotenv() are what we need to use .env to hide confidential code
 import os
@@ -8,6 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
@@ -30,7 +32,7 @@ class Heartbeat(db.Model):
     heartbeat_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
     user_role = db.Column(db.String(100))
-    time_stamp = db.Column(db.Integer)
+    time_stamp = db.Column(db.String(100))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     speed = db.Column(db.Float)
@@ -43,6 +45,7 @@ with app.app_context():
 
 
 @app.route('/heartbeat', methods=['POST'])
+@cross_origin()
 def heartbeatpost():
     data = json.loads(request.get_data())
     user_id = data['userId']
