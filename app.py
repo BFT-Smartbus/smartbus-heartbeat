@@ -47,7 +47,7 @@ def heartbeatpost():
     data = json.loads(request.get_data())
     user_id = data['userId']
     user_role = data['userRole']
-    time_stamp = data['timeStamp']
+    time_stamp = data['timestamp']
     latitude = data['latitude']
     longitude = data['longitude']
     speed = data['speed']
