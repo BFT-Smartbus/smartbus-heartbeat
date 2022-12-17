@@ -65,7 +65,7 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
-def post_heartbeat(id, role, timestamp, lat, long, spd):
+def post_heartbeat(id, role, timestamp, lat, long, speed):
 
     heartbeat_record = Heartbeat(
         user_id=id,
@@ -73,7 +73,7 @@ def post_heartbeat(id, role, timestamp, lat, long, spd):
         time_stamp=timestamp,
         latitude=lat,
         longitude=long,
-        speed=spd
+        speed=speed
     )
 
     db.session.add(heartbeat_record)

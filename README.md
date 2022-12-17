@@ -5,7 +5,7 @@
 ## Setting up Python virtual environment
 
 1. Set up a virtual environment in root folder: `python3 -m venv venv`
-2. Activate the virtual environment: `source .venv/bin/activate`
+2. Activate the virtual environment: `source venv/bin/activate`
 3. Install libraries: `pip3 install -r requirements.txt`
 4. Run `deactivate` to close the virtual environment.
 
