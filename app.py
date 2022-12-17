@@ -8,8 +8,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-SECRET_KEY = os.getenv("SQL_PASSWORD")
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://postgres:{SECRET_KEY}@localhost/heartbeatdriver"
+
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{USERNAME}:{PASSWORD}@localhost/heartbeat"
 db = SQLAlchemy(app)
 
 # define tables schemas that needed for coming up the write to heartbeat driver endpoint
@@ -20,10 +23,10 @@ class Drivers(db.Model):
     username = db.Column(db.String(100))
     password = db.Column(db.String(100))
     heartbeat = db.relationship(
-        'HeartbeatDriver', backref='drivers', lazy=True)
+        'Heartbeat', backref='drivers', lazy=True)
 
 
-class HeartbeatDriver(db.Model):
+class Heartbeat(db.Model):
     heartbeat_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
     user_role = db.Column(db.String(100))
@@ -39,23 +42,20 @@ with app.app_context():
 # endpoint, the business logic to accept data from FE and write to HeartbeatDriver table
 
 
-@app.route('/heartbeatdriverpost', methods=['POST'])
+@app.route('/heartbeat', methods=['POST'])
 def heartbeatpost():
     data = json.loads(request.get_data())
+    user_id = data['userId']
+    user_role = data['userRole']
+    time_stamp = data['timeStamp']
+    latitude = data['latitude']
+    longitude = data['longitude']
+    speed = data['speed']
 
-    if not data['userId'] or not data['userRole'] or not data['timeStamp'] or not data['latitude'] or not data['longitude'] or not data['speed']:
+    if not user_id or not user_role or not time_stamp or not latitude or not longitude or not speed:
         return "unable to write to server", 400
 
-    heartbeat_record = HeartbeatDriver(
-        user_id=data['userId'],
-        user_role=data['userRole'],
-        time_stamp=data['timeStamp'],
-        latitude=data['latitude'],
-        longitude=data['longitude'],
-        speed=data['speed'])
-
-    db.session.add(heartbeat_record)
-    db.session.commit()
+    post_heartbeat(user_id, user_role, time_stamp, latitude, longitude, speed)
 
     return "heartbeat data added successfully", 200
 
@@ -63,3 +63,18 @@ def heartbeatpost():
 if __name__ == "__main__":
 
     app.run(debug=True)
+
+
+def post_heartbeat(id, role, timestamp, lat, long, speed):
+
+    heartbeat_record = Heartbeat(
+        user_id=id,
+        user_role=role,
+        time_stamp=timestamp,
+        latitude=lat,
+        longitude=long,
+        speed=speed
+    )
+
+    db.session.add(heartbeat_record)
+    db.session.commit()
