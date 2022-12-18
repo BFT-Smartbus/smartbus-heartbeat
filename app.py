@@ -1,8 +1,10 @@
 import os
+import sys
 import json
 from dotenv import load_dotenv
 from dataclasses import dataclass
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask import Flask, request, jsonify
 
 # os, dotenv, and load_dotenv() are what we need to use .env to hide confidential code
@@ -40,13 +42,6 @@ class Heartbeat(db.Model):
 with app.app_context():
     db.create_all()
 
-
-@app.route("/heartbeat/<int:user_id>", methods=["GET"])
-def get_heartbeats(user_id):
-    data = Heartbeat.query.get(user_id)
-    return jsonify(data)
-
-
 # endpoint, the business logic to accept data from FE and write to HeartbeatDriver table
 @app.route("/heartbeat", methods=["POST"])
 def heartbeatpost():
@@ -71,6 +66,27 @@ def heartbeatpost():
     post_heartbeat(user_id, user_role, time_stamp, latitude, longitude, speed)
 
     return "heartbeat data added successfully", 200
+
+
+@app.route("/heartbeat/<int:user_id>", methods=["GET"])
+def get_heartbeats(user_id):
+    lookback = request.args.get("lookback")
+
+    if not lookback:
+        data = (
+            Heartbeat.query.filter_by(user_id=user_id)
+            .order_by(Heartbeat.time_stamp.desc())
+            .first()
+        )
+    else:
+        data = (
+            Heartbeat.query.filter_by(user_id=user_id)
+            .order_by(Heartbeat.time_stamp.desc())
+            .limit(lookback)
+            .all()
+        )
+
+    return jsonify(data)
 
 
 if __name__ == "__main__":
