@@ -78,7 +78,7 @@ def get_heartbeats_by_user_id(user_id):
 
     # check if user_id exists
     if not user_exists:
-        return f"No heartbeats found for user_id: {user_id} not found.", 400
+        return f"No heartbeats found for user_id: {user_id}.", 400
 
     # check if lookback parameter is valid type and within range
     if lookback:
