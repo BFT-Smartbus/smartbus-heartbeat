@@ -11,7 +11,6 @@ load_dotenv()
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
-# constants
 MAX_LOOKBACK = 10
 
 app = Flask(__name__)
@@ -64,11 +63,11 @@ def heartbeatpost():
         or not longitude
         or not speed
     ):
-        return "unable to write to server", 400
+        return "Unable to write to server due to missing attribute(s)", 400
 
     post_heartbeat(user_id, user_role, time_stamp, latitude, longitude, speed)
 
-    return "heartbeat data added successfully", 200
+    return "Heartbeat data added successfully", 200
 
 
 # GET heartbeats by user_id
@@ -79,18 +78,24 @@ def get_heartbeats_by_user_id(user_id):
 
     # check if user_id exists
     if not user_exists:
-        return f"user_id: {user_id} not found.", 400
+        return f"No heartbeats found for user_id: {user_id} not found.", 400
 
-    # check if query parameter exists
+    # check if lookback parameter is valid type and within range
     if lookback:
-        if int(lookback) > MAX_LOOKBACK:
-            return f"Maximum heartbeat limit exceeded ({MAX_LOOKBACK})", 400
+        try:
+            lookback = int(lookback)
+        except ValueError:
+            return "Invalid type, lookback must be an integer", 400
+
+        if lookback > MAX_LOOKBACK:
+            return f"Maximum lookback limit exceeded (max: {MAX_LOOKBACK})", 400
 
         # get multiple heartbeats
-        data = get_heartbeats(user_id, lookback)
+        data = get_latest_heartbeats(user_id, lookback)
+
     else:
         # get single heartbeat
-        data = get_heartbeats(user_id)
+        data = get_latest_heartbeats(user_id)
 
     return jsonify(data)
 
@@ -118,7 +123,7 @@ def post_heartbeat(id, role, timestamp, lat, long, speed):
 # params
 # user_id: int
 # lookback: int, 1 by default
-def get_heartbeats(user_id, lookback=1):
+def get_latest_heartbeats(user_id, lookback=1):
     return (
         Heartbeat.query.filter_by(user_id=user_id)
         .order_by(Heartbeat.time_stamp.desc())
