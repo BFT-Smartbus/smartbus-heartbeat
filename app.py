@@ -1,10 +1,9 @@
 import os
-import sys
 import json
 from dotenv import load_dotenv
 from dataclasses import dataclass
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
+from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify
 
 # os, dotenv, and load_dotenv() are what we need to use .env to hide confidential code
@@ -31,6 +30,7 @@ class Drivers(db.Model):
     heartbeat = db.relationship("Heartbeat", backref="drivers", lazy=True)
 
 
+# use dataclass decorator to specify how each field should be returned from queries
 @dataclass
 class Heartbeat(db.Model):
     heartbeat_id: int = db.Column(db.Integer, primary_key=True)
@@ -71,34 +71,26 @@ def heartbeatpost():
     return "heartbeat data added successfully", 200
 
 
+# GET heartbeats by user_id
 @app.route("/heartbeat/<int:user_id>", methods=["GET"])
-def get_heartbeats(user_id):
+def get_heartbeats_by_user_id(user_id):
     user_exists = Heartbeat.query.filter_by(user_id=user_id).first()
-    lookback = int(request.args.get("lookback"))
+    lookback = request.args.get("lookback")
 
     # check if user_id exists
     if not user_exists:
         return f"user_id: {user_id} not found.", 400
 
-    # limit number of heartbeats returned
-    if lookback > MAX_LOOKBACK:
-        return f"Maximum limit exceeded ({MAX_LOOKBACK})", 400
-
-    # return multiple heartbeats by user_id
+    # check if query parameter exists
     if lookback:
-        data = (
-            Heartbeat.query.filter_by(user_id=user_id)
-            .order_by(Heartbeat.time_stamp.desc())
-            .limit(lookback)
-            .all()
-        )
-    # return single heartbeat by user_id
+        if int(lookback) > MAX_LOOKBACK:
+            return f"Maximum heartbeat limit exceeded ({MAX_LOOKBACK})", 400
+
+        # get multiple heartbeats
+        data = get_heartbeats(user_id, lookback)
     else:
-        data = (
-            Heartbeat.query.filter_by(user_id=user_id)
-            .order_by(Heartbeat.time_stamp.desc())
-            .first()
-        )
+        # get single heartbeat
+        data = get_heartbeats(user_id)
 
     return jsonify(data)
 
@@ -121,3 +113,15 @@ def post_heartbeat(id, role, timestamp, lat, long, speed):
 
     db.session.add(heartbeat_record)
     db.session.commit()
+
+
+# params
+# user_id: int
+# lookback: int, 1 by default
+def get_heartbeats(user_id, lookback=1):
+    return (
+        Heartbeat.query.filter_by(user_id=user_id)
+        .order_by(Heartbeat.time_stamp.desc())
+        .limit(lookback)
+        .all()
+    )
