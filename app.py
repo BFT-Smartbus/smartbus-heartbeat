@@ -12,6 +12,9 @@ load_dotenv()
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
+# constants
+MAX_LOOKBACK = 10
+
 app = Flask(__name__)
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config[
@@ -70,20 +73,31 @@ def heartbeatpost():
 
 @app.route("/heartbeat/<int:user_id>", methods=["GET"])
 def get_heartbeats(user_id):
-    lookback = request.args.get("lookback")
+    user_exists = Heartbeat.query.filter_by(user_id=user_id).first()
+    lookback = int(request.args.get("lookback"))
 
-    if not lookback:
-        data = (
-            Heartbeat.query.filter_by(user_id=user_id)
-            .order_by(Heartbeat.time_stamp.desc())
-            .first()
-        )
-    else:
+    # check if user_id exists
+    if not user_exists:
+        return f"user_id: {user_id} not found.", 400
+
+    # limit number of heartbeats returned
+    if lookback > MAX_LOOKBACK:
+        return f"Maximum limit exceeded ({MAX_LOOKBACK})", 400
+
+    # return multiple heartbeats by user_id
+    if lookback:
         data = (
             Heartbeat.query.filter_by(user_id=user_id)
             .order_by(Heartbeat.time_stamp.desc())
             .limit(lookback)
             .all()
+        )
+    # return single heartbeat by user_id
+    else:
+        data = (
+            Heartbeat.query.filter_by(user_id=user_id)
+            .order_by(Heartbeat.time_stamp.desc())
+            .first()
         )
 
     return jsonify(data)
