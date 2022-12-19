@@ -15,9 +15,7 @@ CORS(app)
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = f"postgresql://{USERNAME}:{PASSWORD}@localhost/heartbeat"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{USERNAME}:{PASSWORD}@localhost/heartbeat"
 db = SQLAlchemy(app)
 
 # define tables schemas that needed for coming up the write to heartbeat driver endpoint
