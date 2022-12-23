@@ -1,13 +1,19 @@
-import os
 import json
-from dotenv import load_dotenv
+from flask import Flask, request, jsonify
 from dataclasses import dataclass
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 
 # os, dotenv, and load_dotenv() are what we need to use .env to hide confidential code
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
+
+app = Flask(__name__)
+CORS(app)
+
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
@@ -45,12 +51,15 @@ with app.app_context():
     db.create_all()
 
 # endpoint, the business logic to accept data from FE and write to HeartbeatDriver table
+
+
 @app.route("/heartbeat", methods=["POST"])
+@cross_origin()
 def heartbeatpost():
     data = json.loads(request.get_data())
     user_id = data["userId"]
     user_role = data["userRole"]
-    time_stamp = data["timeStamp"]
+    time_stamp = data["timestamp"]
     latitude = data["latitude"]
     longitude = data["longitude"]
     speed = data["speed"]
