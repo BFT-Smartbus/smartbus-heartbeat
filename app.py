@@ -12,7 +12,7 @@ app = Flask(__name__)
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{USERNAME}:{PASSWORD}@localhost/heartbeat"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://{USERNAME}:{PASSWORD}@localhost:5433/heartbeat"
 db = SQLAlchemy(app)
 
 # define tables schemas that needed for coming up the write to heartbeat driver endpoint
@@ -52,7 +52,7 @@ def heartbeatpost():
     longitude = data['longitude']
     speed = data['speed']
 
-    if not user_id or not user_role or not time_stamp or not latitude or not longitude or not speed:
+    if not user_id or not user_role or not time_stamp or not latitude or not longitude:
         return "unable to write to server", 400
 
     post_heartbeat(user_id, user_role, time_stamp, latitude, longitude, speed)
