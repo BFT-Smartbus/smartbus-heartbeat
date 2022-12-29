@@ -14,12 +14,12 @@ dynamodb = boto3.resource(
 table = dynamodb.create_table(
     TableName="heartbeat",
     KeySchema=[
-        {"AttributeName": "user_id", "KeyType": "HASH"},
-        {"AttributeName": "time_stamp", "KeyType": "RANGE"},
+        {"AttributeName": "userId", "KeyType": "HASH"},
+        {"AttributeName": "timestamp", "KeyType": "RANGE"},
     ],  # Partition key
     AttributeDefinitions=[
-        {"AttributeName": "user_id", "AttributeType": "S"},
-        {"AttributeName": "time_stamp", "AttributeType": "N"},
+        {"AttributeName": "userId", "AttributeType": "S"},
+        {"AttributeName": "timestamp", "AttributeType": "N"},
     ],
     ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
 )
