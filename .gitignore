@@ -6,3 +6,4 @@ node_modules
 *.pyc
 serverless.yml
 venv
+.env
