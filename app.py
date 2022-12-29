@@ -9,6 +9,8 @@ from flask_cors import CORS, cross_origin
 import os
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -23,7 +25,7 @@ app = Flask(__name__)
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config[
     "SQLALCHEMY_DATABASE_URI"
-] = f"postgresql://{USERNAME}:{PASSWORD}@localhost/heartbeat"
+] = f"postgresql://{USERNAME}:{PASSWORD}@localhost:5433/heartbeat"
 
 db = SQLAlchemy(app)
 

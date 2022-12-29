@@ -1,13 +1,19 @@
 from flask import Flask
 import boto3
 
+REGION_NAME = "us-east-1"
+ENDPOINT_URL = "https://dynamodb.us-east-1.amazonaws.com/"
+
 app = Flask(__name__)
 
 # use boto3, a AWS SDK for Python to appoint which region to find your dynamodb table
+
+
+
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name="us-east-1",
-    endpoint_url="https://dynamodb.us-east-1.amazonaws.com/",
+    region_name= REGION_NAME,
+    endpoint_url= ENDPOINT_URL,
 )
 
 # create a dynamodb table named heartbeat, with a partition key:user_id, and a range key: time_stamp

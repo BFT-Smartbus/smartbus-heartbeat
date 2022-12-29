@@ -7,3 +7,4 @@ node_modules
 serverless.yml
 venv
 .env
+__pycache__
