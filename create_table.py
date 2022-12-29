@@ -18,7 +18,7 @@ table = dynamodb.create_table(
         {"AttributeName": "time_stamp", "KeyType": "RANGE"},
     ],  # Partition key
     AttributeDefinitions=[
-        {"AttributeName": "user_id", "AttributeType": "N"},
+        {"AttributeName": "user_id", "AttributeType": "S"},
         {"AttributeName": "time_stamp", "AttributeType": "N"},
     ],
     ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
