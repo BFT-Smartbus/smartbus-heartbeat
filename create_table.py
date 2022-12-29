@@ -3,6 +3,16 @@ import boto3
 
 REGION_NAME = "us-east-1"
 ENDPOINT_URL = "https://dynamodb.us-east-1.amazonaws.com/"
+TABLE_NAME = "heartbeat"
+KEYSCHEMA = [
+        {"AttributeName": "user_id", "KeyType": "HASH"},
+        {"AttributeName": "time_stamp", "KeyType": "RANGE"},
+    ],
+ATTRIBUTEDEFINITIONS = [
+        {"AttributeName": "user_id", "AttributeType": "S"},
+        {"AttributeName": "time_stamp", "AttributeType": "N"},
+    ]
+PROVISIONEDTHROUGHPUT = {"ReadCapacityUnits": 5, "WriteCapacityUnits": 5}
 
 app = Flask(__name__)
 
@@ -18,14 +28,8 @@ dynamodb = boto3.resource(
 
 # create a dynamodb table named heartbeat, with a partition key:user_id, and a range key: time_stamp
 table = dynamodb.create_table(
-    TableName="heartbeat",
-    KeySchema=[
-        {"AttributeName": "user_id", "KeyType": "HASH"},
-        {"AttributeName": "time_stamp", "KeyType": "RANGE"},
-    ],  # Partition key
-    AttributeDefinitions=[
-        {"AttributeName": "user_id", "AttributeType": "S"},
-        {"AttributeName": "time_stamp", "AttributeType": "N"},
-    ],
-    ProvisionedThroughput={"ReadCapacityUnits": 5, "WriteCapacityUnits": 5},
+    TableName= TABLE_NAME,
+    KeySchema= KEYSCHEMA,
+    AttributeDefinitions= ATTRIBUTEDEFINITIONS,
+    ProvisionedThroughput= PROVISIONEDTHROUGHPUT,
 )
