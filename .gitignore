@@ -7,3 +7,4 @@ node_modules
 serverless.yml
 venv
 .env
+.DS_Store
