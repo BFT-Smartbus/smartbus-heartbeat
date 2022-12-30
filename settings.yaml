@@ -3,12 +3,12 @@ ENDPOINT_URL: 'https://dynamodb.us-east-1.amazonaws.com/'
 TABLE_NAME: 'heartbeat'
 KEYSCHEMA:
   [
-    { AttributeName: user_id, KeyType: HASH },
-    { AttributeName: time_stamp, KeyType: RANGE },
+    { AttributeName: userId, KeyType: HASH },
+    { AttributeName: timestamp, KeyType: RANGE },
   ]
 ATTRIBUTEDEFINITIONS:
   [
-    { 'AttributeName': 'user_id', 'AttributeType': 'S' },
-    { 'AttributeName': 'time_stamp', 'AttributeType': 'N' },
+    { 'AttributeName': 'userId', 'AttributeType': 'S' },
+    { 'AttributeName': 'timestamp', 'AttributeType': 'N' },
   ]
 PROVISIONEDTHROUGHPUT: { 'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5 }
