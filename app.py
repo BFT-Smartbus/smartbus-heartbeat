@@ -72,7 +72,6 @@ def heartbeatpost():
         or not time_stamp
         or not latitude
         or not longitude
-        or not speed
     ):
         return "Unable to write to server due to missing attribute(s)", 400
 
