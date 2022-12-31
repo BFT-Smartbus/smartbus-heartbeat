@@ -1,5 +1,6 @@
 import json
 import boto3
+from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
 from dataclasses import dataclass
 from sqlalchemy import desc
@@ -60,6 +61,54 @@ def post_heartbeat(id, timestamp, lat, long, speed):
             "speed": speed,
         }
     )
+
+@app.route("/heartbeat/<user_id>", methods=["GET"])
+@cross_origin()
+def get_heartbeats_by_user_id(userId):
+    # convert user_id to a integer, otherwise the post request will be return a 500 error message
+    # user_id = int(user_id)
+
+    # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
+    user_exists = table.query(KeyConditionExpression=Key("userId").eq(userId))
+
+    # create a lookback variable to retrive the lookback value after th
+    lookback = request.args.get("lookback")
+
+    # check if user_id exists
+    if not user_exists:
+        return "No heartbeats found for this userId", 400
+
+    # check if lookback parameter is valid type and within range
+    if lookback:
+        try:
+            lookback = int(lookback)
+        except ValueError:
+            return "Invalid type, lookback must be an integer", 400
+
+        if lookback > MAX_LOOKBACK:
+            return f"Maximum lookback limit exceeded (max: {MAX_LOOKBACK})", 400
+
+        data = get_latest_heartbeats(userId, lookback)
+
+    else:
+        # get single heartbeat
+        data = get_latest_heartbeats(userId)
+
+    # return requested heartbeat data to user
+    return jsonify(data["Items"])
+
+def get_latest_heartbeats(userId, lookback=1):
+    userId = int(userId)
+    return table.query(
+        # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
+        KeyConditionExpression=Key("userId").eq(userId),
+        # sort time_stamp(Sort key) by decending order
+        ScanIndexForward=False,
+        # set the number of returning data limit
+        Limit=lookback,
+    )
+
+
 
 # @app.route("/heartbeat", methods=["POST"])
 # @cross_origin()
