@@ -1,13 +1,11 @@
 import boto3
 from yaml import load
-
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
+from yaml import Loader
 
 with open("settings.yaml", "r") as stream:
     data = load(stream, Loader=Loader)
+
+
 
 dynamodb = boto3.resource(
     "dynamodb",
