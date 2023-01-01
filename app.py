@@ -1,6 +1,5 @@
 import json
 import boto3
-import logging
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
