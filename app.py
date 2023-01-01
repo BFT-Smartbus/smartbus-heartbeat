@@ -4,9 +4,6 @@ import logging
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
-from dataclasses import dataclass
-from sqlalchemy import desc
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 
 logger = logging.getLogger()
