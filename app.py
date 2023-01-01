@@ -26,11 +26,7 @@ table = dynamodb.Table("heartbeat")
 @app.route("/heartbeat", methods=["GET"])
 @cross_origin()
 def get_all_heartbeat():
-    logger.info("All heartbeat data returned")
-    # return "<p>Hello, World!</p>"
-
     response = table.scan()["Items"]
-    logger.info("All heartbeat data returned")
     return jsonify(response)
 
 @app.route("/heartbeat", methods=["POST"])
