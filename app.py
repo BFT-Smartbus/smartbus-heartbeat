@@ -6,9 +6,6 @@ from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
 app = Flask(__name__)
 CORS(app)
 
