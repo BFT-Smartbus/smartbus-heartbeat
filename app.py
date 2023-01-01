@@ -80,6 +80,7 @@ def heartbeatpost():
 
 # GET heartbeats by user_id
 @app.route("/heartbeat/<int:user_id>", methods=["GET"])
+@cross_origin()
 def get_heartbeats_by_user_id(user_id):
     user_exists = Heartbeat.query.filter_by(user_id=user_id).first()
     lookback = request.args.get("lookback")
