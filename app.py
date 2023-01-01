@@ -1,11 +1,16 @@
 import json
 import boto3
+import logging
+from decimal import Decimal
 from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
 from dataclasses import dataclass
 from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 app = Flask(__name__)
 CORS(app)
@@ -21,12 +26,14 @@ dynamodb = boto3.resource(
 table = dynamodb.Table("heartbeat")
 
 # returns all heartbeat data in dynamodb
-@app.route("/heartbeat")
+@app.route("/heartbeat", methods=["GET"])
 @cross_origin()
 def get_all_heartbeat():
+    logger.info("All heartbeat data returned")
+    # return "<p>Hello, World!</p>"
 
     response = table.scan()["Items"]
-    # logger.info("All heartbeat data returned")
+    logger.info("All heartbeat data returned")
     return jsonify(response)
 
 @app.route("/heartbeat", methods=["POST"])
@@ -56,17 +63,17 @@ def post_heartbeat(id, timestamp, lat, long, speed):
         Item={
             "userId": id,
             "timestamp": timestamp,
-            "latitude": lat,
-            "longitude": long,
+            "latitude": Decimal(str(lat)),
+            "longitude": Decimal(str(long)),
             "speed": speed,
         }
     )
 
-@app.route("/heartbeat/<user_id>", methods=["GET"])
+@app.route("/heartbeat/<userId>", methods=["GET"])
 @cross_origin()
 def get_heartbeats_by_user_id(userId):
     # convert user_id to a integer, otherwise the post request will be return a 500 error message
-    # user_id = int(user_id)
+    userId = str(userId)
 
     # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
     user_exists = table.query(KeyConditionExpression=Key("userId").eq(userId))
@@ -98,7 +105,7 @@ def get_heartbeats_by_user_id(userId):
     return jsonify(data["Items"])
 
 def get_latest_heartbeats(userId, lookback=1):
-    userId = int(userId)
+    userId = str(userId)
     return table.query(
         # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
         KeyConditionExpression=Key("userId").eq(userId),
