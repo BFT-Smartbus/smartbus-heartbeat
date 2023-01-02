@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
 app.config[
     "SQLALCHEMY_DATABASE_URI"
-] = f"postgresql://{USERNAME}:{PASSWORD}@localhost:5433/heartbeat"
+] = f"postgresql://{USERNAME}:{PASSWORD}@localhost/heartbeat"
 
 db = SQLAlchemy(app)
 
