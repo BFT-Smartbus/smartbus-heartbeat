@@ -64,15 +64,8 @@ def get_heartbeats_by_user_id(userId):
     # convert user_id to a integer, otherwise the post request will be return a 500 error message
     userId = str(userId)
 
-    # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
-    user_exists = table.query(KeyConditionExpression=Key("userId").eq(userId))
-
     # create a lookback variable to retrive the lookback value after th
     lookback = request.args.get("lookback")
-
-    # check if user_id exists
-    if not user_exists:
-        return "No heartbeats found for this userId", 400
 
     # check if lookback parameter is valid type and within range
     if lookback:
@@ -90,8 +83,12 @@ def get_heartbeats_by_user_id(userId):
         # get single heartbeat
         data = get_latest_heartbeats(userId)
 
+        user_exists = table.query(KeyConditionExpression=Key("userId").eq(userId))
+
+        if not user_exists:
+            return "No heartbeats found for this userId", 400
     # return requested heartbeat data to user
-    return jsonify(data["Items"])
+        return jsonify(data["Items"])
 
 def get_latest_heartbeats(userId, lookback=1):
     userId = str(userId)
