@@ -20,8 +20,8 @@ try:
         AttributeDefinitions= data['ATTRIBUTEDEFINITIONS'],
         ProvisionedThroughput= data['PROVISIONEDTHROUGHPUT'],
     )
-except:
-    print("unable to create dynamodb table from create_table.py line 24")
+except Exception as e:
+    print(f"unable to create dynamo table heartbeat: {e}")
 
 
 
