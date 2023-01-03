@@ -9,6 +9,8 @@ from flask_cors import CORS, cross_origin
 import os
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 
 app = Flask(__name__)

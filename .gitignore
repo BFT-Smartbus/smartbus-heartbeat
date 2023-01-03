@@ -1,4 +1,12 @@
+.caringvenv/*
+.vscode/*
+.serverless
+node_modules
+*.pyo
+*.pyc
+serverless.yml
 venv
-__pycache__
 .env
+__pycache__
 .DS_Store
+
