@@ -13,12 +13,16 @@ dynamodb = boto3.resource(
     endpoint_url= data['ENDPOINT_URL']
 )
 
-table = dynamodb.create_table(
-    TableName= data['TABLE_NAME'],
-    KeySchema= data['KEYSCHEMA'],
-    AttributeDefinitions= data['ATTRIBUTEDEFINITIONS'],
-    ProvisionedThroughput= data['PROVISIONEDTHROUGHPUT'],
-)
+try:
+    table = dynamodb.create_table(
+        TableName= data['TABLE_NAME'],
+        KeySchema= data['KEYSCHEMA'],
+        AttributeDefinitions= data['ATTRIBUTEDEFINITIONS'],
+        ProvisionedThroughput= data['PROVISIONEDTHROUGHPUT'],
+    )
+except:
+    print("unable to create dynamodb table from create_table.py line 24")
+
 
 
 
