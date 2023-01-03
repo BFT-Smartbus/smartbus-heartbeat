@@ -1,0 +1,14 @@
+REGION_NAME: 'us-east-1'
+ENDPOINT_URL: 'https://dynamodb.us-east-1.amazonaws.com/'
+TABLE_NAME: 'heartbeat'
+KEYSCHEMA:
+  [
+    { AttributeName: userId, KeyType: HASH },
+    { AttributeName: timestamp, KeyType: RANGE },
+  ]
+ATTRIBUTEDEFINITIONS:
+  [
+    { 'AttributeName': 'userId', 'AttributeType': 'S' },
+    { 'AttributeName': 'timestamp', 'AttributeType': 'N' },
+  ]
+PROVISIONEDTHROUGHPUT: { 'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5 }
