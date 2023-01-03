@@ -1,19 +1,13 @@
 import boto3
 import json
+import yaml
 from decimal import Decimal
-from yaml import load
 
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
-
-#load constant values from setting.yaml
-with open("settings.yaml", "r") as stream:
-    data = load(stream, Loader=Loader)
+with open('settings.yaml', 'r') as stream:
+    settings = yaml.safe_load(stream)
 
 #use boto3, a AWS SDK for Python to appoint which region to find your dynamodb table
-dynamodb = boto3.resource('dynamodb', data['REGION_NAME'])
+dynamodb = boto3.resource('dynamodb', settings['REGION_NAME'])
 
 table = dynamodb.Table('heartbeat')
 

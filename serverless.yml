@@ -1,0 +1,39 @@
+org: czhou123
+app: aws-heartbeat-lambda
+service: aws-heartbeat
+
+frameworkVersion: '3'
+
+custom:
+  pythonRequirements:
+    pythonBin: python3
+  wsgi:
+    app: app.app
+    packRequirements: false
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: dev
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 'arn:aws:dynamodb:us-east-1:035696347963:table/heartbeat'
+
+functions:
+  api:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
