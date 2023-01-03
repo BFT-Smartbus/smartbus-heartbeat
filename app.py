@@ -88,7 +88,7 @@ def get_heartbeats_by_user_id(userId):
         if not user_exists:
             return "No heartbeats found for this userId", 400
     # return requested heartbeat data to user
-        return jsonify(data["Items"])
+    return jsonify(data["Items"])
 
 def get_latest_heartbeats(userId, lookback=1):
     userId = str(userId)
