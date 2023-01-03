@@ -9,6 +9,8 @@ from flask_cors import CORS, cross_origin
 import os
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -70,7 +72,6 @@ def heartbeatpost():
         or not time_stamp
         or not latitude
         or not longitude
-        or not speed
     ):
         return "Unable to write to server due to missing attribute(s)", 400
 
@@ -81,6 +82,7 @@ def heartbeatpost():
 
 # GET heartbeats by user_id
 @app.route("/heartbeat/<int:user_id>", methods=["GET"])
+@cross_origin()
 def get_heartbeats_by_user_id(user_id):
     user_exists = Heartbeat.query.filter_by(user_id=user_id).first()
     lookback = request.args.get("lookback")
