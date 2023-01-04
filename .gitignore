@@ -1,4 +1,11 @@
-venv
-__pycache__
-.env
+.caringvenv/*
+.vscode/*
+.serverless
+node_modules
+*.pyo
+*.pyc
 serverless.yml
+venv
+.env
+__pycache__
+
