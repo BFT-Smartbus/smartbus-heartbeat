@@ -1,3 +1,4 @@
+FILE_NAME: 'heartbeat_data.json'
 REGION_NAME: 'us-east-1'
 ENDPOINT_URL: 'https://dynamodb.us-east-1.amazonaws.com/'
 TABLE_NAME: 'heartbeat'
