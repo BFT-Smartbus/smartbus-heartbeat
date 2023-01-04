@@ -11,7 +11,8 @@ table = dynamodb.Table(settings['TABLE_NAME'])
 
 with open(settings['FILE_NAME']) as json_file:
   heartbeats = json.load(json_file)
-  heartbeat_converted = json.loads(json.dumps(heartbeats), parse_float=Decimal)
+  heartbeat_converted = json.loads(json.dumps(heartbeats),
+  parse_float=Decimal)
 
   for heartbeat in heartbeat_converted:
     user_id = heartbeat['user_id']
