@@ -31,4 +31,4 @@ with open(settings['FILE_NAME']) as json_file:
           }
         )
     except Exception as e:
-      print(f"unable to load data into dynamo table heartbeat: {e}")
+      print(f"unable to load data into dynamoDB table heartbeat: {e}")
