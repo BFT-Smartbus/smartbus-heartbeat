@@ -2,9 +2,10 @@ import boto3
 import json
 import yaml
 from decimal import Decimal
+SETTINGS = 'settings.yaml'
 
-yaml_file = open('settings.yaml', 'r')
-settings = yaml.safe_load(yaml_file)
+with open(SETTINGS, 'r') as yaml_file:
+  settings = yaml.safe_load(yaml_file)
 
 dynamodb = boto3.resource('dynamodb', settings['REGION_NAME'])
 table = dynamodb.Table(settings['TABLE_NAME'])
