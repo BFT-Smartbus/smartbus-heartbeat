@@ -50,8 +50,8 @@ def post_heartbeat(id, time_stamp, lat, long, speed):
 
     table.put_item(
         Item={
-            "user_id": id,
-            "time_stamp": time_stamp,
+            "userId": id,
+            "timestamp": time_stamp,
             "latitude": Decimal(str(lat)),
             "longitude": Decimal(str(long)),
             "speed": speed,
