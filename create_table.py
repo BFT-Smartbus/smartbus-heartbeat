@@ -5,8 +5,6 @@ from yaml import Loader
 with open("settings.yaml", "r") as stream:
     data = load(stream, Loader=Loader)
 
-
-
 dynamodb = boto3.resource(
     "dynamodb",
     region_name = data['REGION_NAME'],
