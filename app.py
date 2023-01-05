@@ -58,7 +58,8 @@ def post_heartbeat(id, time_stamp, lat, long, speed):
         }
     )
 
-@app.route("/heartbeat/<user_id>", methods=["GET"])
+# GET heartbeats by user_id
+@app.route("/heartbeat/<int:user_id>", methods=["GET"])
 @cross_origin()
 def get_heartbeats_by_user_id(user_id):
     # convert user_id to a integer, otherwise the post request will be return a 500 error message
