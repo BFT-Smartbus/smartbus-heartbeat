@@ -29,40 +29,40 @@ def get_all_heartbeat():
 @cross_origin()
 def heartbeatpost():
     data = json.loads(request.get_data())
-    userId = data["userId"]
-    timestamp = data["timestamp"]
+    user_id = data["user_id"]
+    time_stamp = data["time_stamp"]
     latitude = data["latitude"]
     longitude = data["longitude"]
     speed = data["speed"]
 
     if (
-        not userId
-        or not timestamp
+        not user_id
+        or not time_stamp
         or not latitude
         or not longitude
     ):
         return "Unable to write"
 
-    post_heartbeat(userId, timestamp, latitude, longitude, speed)
+    post_heartbeat(user_id, time_stamp, latitude, longitude, speed)
     return "Heartbeat data added successfully", 200
 
-def post_heartbeat(id, timestamp, lat, long, speed):
+def post_heartbeat(id, time_stamp, lat, long, speed):
 
     table.put_item(
         Item={
-            "userId": id,
-            "timestamp": timestamp,
+            "user_id": id,
+            "time_stamp": time_stamp,
             "latitude": Decimal(str(lat)),
             "longitude": Decimal(str(long)),
             "speed": speed,
         }
     )
 
-@app.route("/heartbeat/<userId>", methods=["GET"])
+@app.route("/heartbeat/<user_id>", methods=["GET"])
 @cross_origin()
-def get_heartbeats_by_user_id(userId):
+def get_heartbeats_by_user_id(user_id):
     # convert user_id to a integer, otherwise the post request will be return a 500 error message
-    userId = str(userId)
+    user_id = str(user_id)
 
     # create a lookback variable to retrive the lookback value after th
     lookback = request.args.get("lookback")
@@ -77,20 +77,20 @@ def get_heartbeats_by_user_id(userId):
         if lookback > MAX_LOOKBACK:
             return f"Maximum lookback limit exceeded (max: {MAX_LOOKBACK})", 400
 
-        data = get_latest_heartbeats(userId, lookback)
+        data = get_latest_heartbeats(user_id, lookback)
 
     else:
         # get single heartbeat
-        data = get_latest_heartbeats(userId)
+        data = get_latest_heartbeats(user_id)
 
     # return requested heartbeat data to user
     return jsonify(data["Items"])
 
-def get_latest_heartbeats(userId, lookback=1):
-    userId = str(userId)
+def get_latest_heartbeats(user_id, lookback=1):
+    user_id = str(user_id)
     return table.query(
         # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
-        KeyConditionExpression=Key("userId").eq(userId),
+        KeyConditionExpression=Key("user_id").eq(user_id),
         # sort time_stamp(Sort key) by decending order
         ScanIndexForward=False,
         # set the number of returning data limit
