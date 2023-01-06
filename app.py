@@ -1,22 +1,26 @@
 import json
 import boto3
+import yaml
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
+SETTINGS = 'settings.yaml'
+MAX_LOOKBACK = 10
 
 app = Flask(__name__)
 CORS(app)
 
-MAX_LOOKBACK = 10
+with open(SETTINGS, 'r') as yaml_file:
+  settings = yaml.safe_load(yaml_file)
 
 # retrive the heartbeat table from DynamoDB
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name="us-east-1",
-    endpoint_url="https://dynamodb.us-east-1.amazonaws.com",
+    region_name = settings['REGION_NAME'],
+    endpoint_url= settings['ENDPOINT_URL']
 )
-table = dynamodb.Table("heartbeat")
+table = dynamodb.Table(settings['TABLE_NAME'])
 
 # returns all heartbeat data in dynamodb
 @app.route("/heartbeat", methods=["GET"])
@@ -27,7 +31,7 @@ def get_all_heartbeat():
 
 @app.route("/heartbeat", methods=["POST"])
 @cross_origin()
-def heartbeatpost():
+def post_heartbeat():
     data = json.loads(request.get_data())
     user_id = data["user_id"]
     time_stamp = data["time_stamp"]
@@ -43,23 +47,26 @@ def heartbeatpost():
     ):
         return "Unable to write"
 
-    post_heartbeat(user_id, time_stamp, latitude, longitude, speed)
+    post_heartbeat_helper(user_id, time_stamp, latitude, longitude, speed)
     return "Heartbeat data added successfully", 200
 
-def post_heartbeat(id, time_stamp, lat, long, speed):
+def post_heartbeat_helper(id, time_stamp, lat, long, speed):
 
-    table.put_item(
-        Item={
-            "userId": id,
-            "timestamp": time_stamp,
-            "latitude": Decimal(str(lat)),
-            "longitude": Decimal(str(long)),
-            "speed": speed,
-        }
-    )
+    try:
+        table.put_item(
+            Item={
+                "userId": id,
+                "timestamp": time_stamp,
+                "latitude": Decimal(str(lat)),
+                "longitude": Decimal(str(long)),
+                "speed": speed,
+                }
+        )
+    except Exception as e:
+        print(f"unable to post to dynamo table heartbeat: {e}")
 
 # GET heartbeats by user_id
-@app.route("/heartbeat/<int:user_id>", methods=["GET"])
+@app.route("/heartbeat/<user_id>", methods=["GET"])
 @cross_origin()
 def get_heartbeats_by_user_id(user_id):
     # convert user_id to a integer, otherwise the post request will be return a 500 error message
@@ -91,7 +98,7 @@ def get_latest_heartbeats(user_id, lookback=1):
     user_id = str(user_id)
     return table.query(
         # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
-        KeyConditionExpression=Key("user_id").eq(user_id),
+        KeyConditionExpression=Key("userId").eq(user_id),
         # sort time_stamp(Sort key) by decending order
         ScanIndexForward=False,
         # set the number of returning data limit
