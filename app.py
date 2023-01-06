@@ -59,7 +59,7 @@ def post_heartbeat(id, time_stamp, lat, long, speed):
     )
 
 # GET heartbeats by user_id
-@app.route("/heartbeat/<int:user_id>", methods=["GET"])
+@app.route("/heartbeat/<user_id>", methods=["GET"])
 @cross_origin()
 def get_heartbeats_by_user_id(user_id):
     # convert user_id to a integer, otherwise the post request will be return a 500 error message
@@ -91,7 +91,7 @@ def get_latest_heartbeats(user_id, lookback=1):
     user_id = str(user_id)
     return table.query(
         # make a query from heartbeat table, and return all the heartbeat record that match with the queried user_id
-        KeyConditionExpression=Key("user_id").eq(user_id),
+        KeyConditionExpression=Key("userId").eq(user_id),
         # sort time_stamp(Sort key) by decending order
         ScanIndexForward=False,
         # set the number of returning data limit
