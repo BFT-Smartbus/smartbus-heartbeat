@@ -27,7 +27,7 @@ def get_all_heartbeat():
 
 @app.route("/heartbeat", methods=["POST"])
 @cross_origin()
-def heartbeatpost():
+def post_heartbeat():
     data = json.loads(request.get_data())
     user_id = data["user_id"]
     time_stamp = data["time_stamp"]
@@ -43,10 +43,10 @@ def heartbeatpost():
     ):
         return "Unable to write"
 
-    post_heartbeat(user_id, time_stamp, latitude, longitude, speed)
+    post_heartbeat_helper(user_id, time_stamp, latitude, longitude, speed)
     return "Heartbeat data added successfully", 200
 
-def post_heartbeat(id, time_stamp, lat, long, speed):
+def post_heartbeat_helper(id, time_stamp, lat, long, speed):
 
     table.put_item(
         Item={
