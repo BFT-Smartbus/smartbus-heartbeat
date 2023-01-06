@@ -6,12 +6,10 @@ from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 SETTINGS = 'settings.yaml'
+MAX_LOOKBACK = 10
 
 app = Flask(__name__)
 CORS(app)
-
-MAX_LOOKBACK = 10
-
 
 with open(SETTINGS, 'r') as yaml_file:
   settings = yaml.safe_load(yaml_file)
