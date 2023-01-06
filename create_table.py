@@ -1,22 +1,22 @@
 import boto3
-from yaml import load
-from yaml import Loader
+import yaml
+SETTINGS = 'settings.yaml'
 
-with open("settings.yaml", "r") as stream:
-    data = load(stream, Loader=Loader)
+with open(SETTINGS, "r") as yaml_file:
+    settings = yaml.safe_load(yaml_file)
 
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name = data['REGION_NAME'],
-    endpoint_url= data['ENDPOINT_URL']
+    region_name = settings['REGION_NAME'],
+    endpoint_url= settings['ENDPOINT_URL']
 )
 
 try:
     table = dynamodb.create_table(
-        TableName= data['TABLE_NAME'],
-        KeySchema= data['KEYSCHEMA'],
-        AttributeDefinitions= data['ATTRIBUTEDEFINITIONS'],
-        ProvisionedThroughput= data['PROVISIONEDTHROUGHPUT'],
+        TableName= settings['TABLE_NAME'],
+        KeySchema= settings['KEYSCHEMA'],
+        AttributeDefinitions= settings['ATTRIBUTEDEFINITIONS'],
+        ProvisionedThroughput= settings['PROVISIONEDTHROUGHPUT'],
     )
 except Exception as e:
     print(f"unable to create dynamo table heartbeat: {e}")
