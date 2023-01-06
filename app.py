@@ -1,22 +1,28 @@
 import json
 import boto3
+import yaml
 from decimal import Decimal
 from boto3.dynamodb.conditions import Key
 from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
+SETTINGS = 'settings.yaml'
 
 app = Flask(__name__)
 CORS(app)
 
 MAX_LOOKBACK = 10
 
+
+with open(SETTINGS, 'r') as yaml_file:
+  settings = yaml.safe_load(yaml_file)
+
 # retrive the heartbeat table from DynamoDB
 dynamodb = boto3.resource(
     "dynamodb",
-    region_name="us-east-1",
-    endpoint_url="https://dynamodb.us-east-1.amazonaws.com",
+    region_name = settings['REGION_NAME'],
+    endpoint_url= settings['ENDPOINT_URL']
 )
-table = dynamodb.Table("heartbeat")
+table = dynamodb.Table(settings['TABLE_NAME'])
 
 # returns all heartbeat data in dynamodb
 @app.route("/heartbeat", methods=["GET"])
