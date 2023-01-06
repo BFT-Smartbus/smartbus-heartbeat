@@ -48,15 +48,18 @@ def post_heartbeat():
 
 def post_heartbeat_helper(id, time_stamp, lat, long, speed):
 
-    table.put_item(
-        Item={
-            "userId": id,
-            "timestamp": time_stamp,
-            "latitude": Decimal(str(lat)),
-            "longitude": Decimal(str(long)),
-            "speed": speed,
-        }
-    )
+    try:
+        table.put_item(
+            Item={
+                "userId": id,
+                "timestamp": time_stamp,
+                "latitude": Decimal(str(lat)),
+                "longitude": Decimal(str(long)),
+                "speed": speed,
+                }
+        )
+    except Exception as e:
+        print(f"unable to post to dynamo table heartbeat: {e}")
 
 # GET heartbeats by user_id
 @app.route("/heartbeat/<user_id>", methods=["GET"])
